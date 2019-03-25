@@ -1,16 +1,15 @@
 #[macro_use]
 extern crate stdweb;
 
+use std::rc::Rc;
 #[allow(unused_imports)]
 use std::time::{SystemTime, UNIX_EPOCH};
-use std::rc::Rc;
-
 
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
-use stdweb::web::{document, HtmlElement};
-use stdweb::web::Date;
 use stdweb::web::event::{ClickEvent, KeyPressEvent, MouseMoveEvent};
+use stdweb::web::Date;
+use stdweb::web::{document, HtmlElement};
 
 use stdweb::web::html_element::InputElement;
 mod utils;
@@ -19,7 +18,7 @@ pub struct EventInfo {
     pub element_name: String,
     pub element_id: String,
     pub event_type: String,
-    pub created_at: f64 ,
+    pub created_at: f64,
     // completed_at: Option<SystemTime>,
 }
 
@@ -77,7 +76,7 @@ fn main() {
 
         let el_name: String = js!(return @{target.as_ref()}.localName).try_into().unwrap();
         let el_id: String = js!(return @{target.as_ref()}.id).try_into().unwrap();
-        
+
         let event_info = EventInfo {
             element_name :  el_name.clone(),
             element_id :  el_id.clone(),
@@ -86,6 +85,22 @@ fn main() {
             // completed_at: None,
 
         };
+
+        let post_result = js!(
+            return  fetch(
+                "http://localhost:3000",
+             {
+
+                  method: "POST",
+                  body: {
+                    //   events: @{event_info}
+                      text:"hey" //TODO: make js serializable
+                  }
+            }
+
+            )
+        );
+
         output_msg("clicked body ");
         output_msg(&el_name);
         js!{
